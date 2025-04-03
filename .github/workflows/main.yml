@@ -12,16 +12,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}  # Use GitHub Secret instead of plain token
+          token: ${{ secrets.GH_PAT }}  # Use stored secret for authentication
 
       - name: Configure Git
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-      - name: Update Phishing URLs
+      - name: Fetch Latest Phishing URLs
         run: |
-          echo "https://malicious-site.com" >> phishing_urls.txt  # Append a test URL
+          curl -s https://openphish.com/feed.txt -o phishing_urls.txt
           git add phishing_urls.txt
-          git commit -m "Updated phishing URLs list"
+          git commit -m "Updated phishing URLs list from OpenPhish"
           git push origin main  # Push changes
