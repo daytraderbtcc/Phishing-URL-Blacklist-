@@ -2,26 +2,23 @@ name: Update Phishing URLs
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # Runs every 6 hours
-  workflow_dispatch:  # Allows manual trigger
+    - cron: '0 */6 * * *'  # Runs every 6 hours
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
-  update-phishing-list:
+  update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}  # Use stored secret for authentication
+        uses: actions/checkout@v3
 
-      - name: Configure Git
+      - name: Download Phishing URLs
+        run: curl -L -s https://openphish.com/feed.txt -o phishing_urls.txt
+
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-
-      - name: Fetch Latest Phishing URLs
-        run: |
-          curl -s https://openphish.com/feed.txt -o phishing_urls.txt
           git add phishing_urls.txt
-          git commit -m "Updated phishing URLs list from OpenPhish"
-          git push origin main  # Push changes
+          git commit -m "Updated phishing URLs list"
+          git push
